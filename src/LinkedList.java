@@ -1,6 +1,4 @@
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -14,7 +12,7 @@ import java.util.function.Consumer;
  *
  */
 
-public class LinkedList<T> implements Collection<T>{
+public class LinkedList<T> extends AbstractSequentialList<T> implements Collection<T>{
     private Node head;
     private int size;
 
@@ -34,7 +32,7 @@ public class LinkedList<T> implements Collection<T>{
 
     public int indexOf(Object o) {
         int index = 0;
-        for (Node node = head; node.next != null; node = node.next) {
+        for(Node node = head; node != null; node = node.next) {
             if(node.equals(o)) return index;
             index++;
         }
@@ -69,10 +67,15 @@ public class LinkedList<T> implements Collection<T>{
     }
 
     @Override
+    public ListIterator listIterator(int i) {
+        return null;
+    }
+
+    @Override
     public Object[] toArray() {
         Object[] temp = new Object[size];
         int index = 0;
-        for (Node node = head; node.next != null; node = node.next) {
+        for(Node node = head; node != null; node = node.next) {
             temp[index] = node.t;
             index++;
         }
@@ -83,7 +86,7 @@ public class LinkedList<T> implements Collection<T>{
     public <T1> T1[] toArray(T1[] a) {
         if(a.length >= size) {
             int index = 0;
-            for (Node node = head; node.next != null; node = node.next) {
+            for(Node node = head; node != null; node = node.next) {
                 a[index] = (T1) node.t;
                 index++;
             }
@@ -97,17 +100,33 @@ public class LinkedList<T> implements Collection<T>{
 
     @Override
     public boolean add(T t) {
-        return add(size - 1, t);
+        try{
+            if(head == null) add(0, t);
+            else add(size - 1, t);
+        } catch (IndexOutOfBoundsException e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
-    public boolean add(int index, T t) {
+    public void add(int index, T t) {
+        if(head == null){
+            if(index == 0) {
+                head = new Node(t);
+                size++;
+                return;
+            }
+            else throw new IndexOutOfBoundsException();
+        }
         int count = 0;
-        for (Node node = head; node.next != null; node = node.next) {
+        for (Node node = head; node != null; node = node.next) {
             if(count == index){
                 node.next = new Node(t, node.next);
                 size++;
-                return true;
+                return;
             }
+            count++;
         }
         throw new IndexOutOfBoundsException();
     }
@@ -125,6 +144,24 @@ public class LinkedList<T> implements Collection<T>{
             }
         }
         return false;
+    }
+
+    @Override
+    public T remove(int index){
+        Node node;
+        int i = 0;
+        for (Node previous = head; previous != null; previous =  previous.next) {
+            node = previous.next;
+            if(index == i){
+                T t = (T) node.t;
+                if(node != null) previous.next = node.next;
+                else previous.next = null;
+                size--;
+                return t;
+            }
+            i++;
+        }
+        return null;
     }
 
     @Override
@@ -149,7 +186,7 @@ public class LinkedList<T> implements Collection<T>{
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        for (Node node = head; node.next != null; node = node.next) {
+        for(Node node = head; node != null; node = node.next) {
             Node finalNode = node; //TODO figure out why this line is needed
             c.forEach(t ->{ if(!t.equals(finalNode)) remove(finalNode); });
         }
@@ -164,30 +201,41 @@ public class LinkedList<T> implements Collection<T>{
 
     @Override
     public void forEach(Consumer<? super T> action) {
-        for (Node node = head; node.next != null; node = node.next) {
+        for(Node node = head; node != null; node = node.next) {
             action.accept((T) node.t);
         }
     }
 
     public T get(int index) {
         int i = 0;
-        for (Node node = head; node.next != null; node = node.next) {
+        for(Node node = head; node != null; node = node.next) {
             if(i == index) return (T) node.t;
             i++;
         }
         throw new IndexOutOfBoundsException();
     }
 
-    public void set(int index, T t){
+    public T set(int index, T t){
         int i = 0;
-        for (Node node = head; node.next != null; node = node.next) {
+        for(Node node = head; node != null; node = node.next) {
             if(i == index){
                 node.t = t;
-                return;
+                return t;
             }
             i++;
         }
         throw new IndexOutOfBoundsException();
+    }
+
+    @Override
+    public String toString() {
+        if(head == null) return null;
+        String out = "(";
+        for (Node node = head; node != null; node = node.next) {
+            out += node.t + ", ";
+        }
+        out = out.substring(0, out.length() - 2) + ")";
+        return out;
     }
 
     private class Node<T>{
