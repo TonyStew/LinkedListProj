@@ -169,6 +169,27 @@ public class LinkedList<T> implements Collection<T>{
         }
     }
 
+    public T get(int index) {
+        int i = 0;
+        for (Node node = head; node.next != null; node = node.next) {
+            if(i == index) return (T) node.t;
+            i++;
+        }
+        throw new IndexOutOfBoundsException();
+    }
+
+    public void set(int index, T t){
+        int i = 0;
+        for (Node node = head; node.next != null; node = node.next) {
+            if(i == index){
+                node.t = t;
+                return;
+            }
+            i++;
+        }
+        throw new IndexOutOfBoundsException();
+    }
+
     private class Node<T>{
         private T t;
         private Node next;
