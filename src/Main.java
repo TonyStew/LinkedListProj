@@ -1,3 +1,5 @@
+import java.util.Collections;
+
 /**
  * Main
  *
@@ -16,8 +18,10 @@ public class Main {
         list.add(12);
         list.add(112);
         System.out.println(list);
-        list.remove(1);
-        System.out.println(list);
+//        Collections.sort(list);
+        for(int i : list){
+            System.out.println(i);
+        }
         System.out.println(list.size());
     }
 }
