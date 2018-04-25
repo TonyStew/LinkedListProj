@@ -20,6 +20,16 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
         size = 0;
     }
 
+    public LinkedList(Collection<T> c){
+        size = 0;
+        addAll(c);
+    }
+
+    public LinkedList(T[] a){
+        size = 0;
+        addAll(Arrays.asList(a));
+    }
+
     @Override
     public int size() {
         return size;
@@ -30,6 +40,7 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
         return head == null;
     }
 
+    @Override
     public int indexOf(Object o) {
         int index = 0;
         for(T t: this) {
@@ -41,7 +52,7 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
 
     @Override
     public boolean contains(Object o) {
-        return indexOf(o) >= 0;
+        return indexOf(o) != -1;
     }
 
     @Override
@@ -110,6 +121,7 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
         return true;
     }
 
+    @Override
     public void add(int index, T t) {
         if(head == null){
             if(index == 0) {
@@ -118,6 +130,11 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
                 return;
             }
             else throw new IndexOutOfBoundsException();
+        }
+        if(index == 0){
+            head = new Node(t, head);
+            size++;
+            return;
         }
         int count = 0;
         for (Node node = head; node != null; node = node.next) {
@@ -133,8 +150,13 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
 
     @Override
     public boolean remove(Object o) {
+        if(head.t.equals(o)){
+            head = head.next;
+            size--;
+            return true;
+        }
         Node node;
-        for (Node previous = head; previous != null; previous =  previous.next) {
+        for (Node previous = head; previous.next != null; previous =  previous.next) {
             node = previous.next;
             if(node.t.equals(o)){
                 if(node != null) previous.next = node.next;
@@ -151,6 +173,7 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
         if(index == 0){
             T t = (T) head.t;
             head = head.next;
+            size--;
             return t;
         }
         Node node;
@@ -211,6 +234,7 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
         }
     }
 
+    @Override
     public T get(int index) {
         int i = 0;
         for(T t: this) {
@@ -220,6 +244,7 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
         throw new IndexOutOfBoundsException();
     }
 
+    @Override
     public T set(int index, T t){
         int i = 0;
         for(Node node = head; node != null; node = node.next) {
@@ -235,17 +260,17 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
     @Override
     public String toString() {
         if(head == null) return null;
-        String out = "(";
+        String out = "[";
         for (Node node = head; node != null; node = node.next) {
             out += node.t + ", ";
         }
-        out = out.substring(0, out.length() - 2) + ")";
+        out = out.substring(0, out.length() - 2) + "]";
         return out;
     }
 
     private class Node<T>{
-        private T t;
-        private Node next;
+        T t;
+        Node next;
 
         public Node(T t){
             this(t, null);
