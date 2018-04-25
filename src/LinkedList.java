@@ -113,7 +113,12 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
     public boolean add(T t) {
         try{
             if(head == null) add(0, t);
-            else add(size - 1, t);
+            else{
+                Node node;
+                for (node = head; node.next != null; node = node.next);
+                node.next = new Node(t);
+                size++;
+            }
         } catch (IndexOutOfBoundsException e){
             e.printStackTrace();
             return false;
@@ -150,6 +155,7 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
 
     @Override
     public boolean remove(Object o) {
+        if(head == null) return false;
         if(head.t.equals(o)){
             head = head.next;
             size--;
@@ -215,8 +221,7 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
     @Override
     public boolean retainAll(Collection<?> c) {
         for(Node node = head; node != null; node = node.next) {
-            Node finalNode = node; //TODO figure out why this line is needed
-            c.forEach(t ->{ if(!t.equals(finalNode)) remove(finalNode); });
+            if(!c.contains(node.t)) remove(node.t);
         }
         return true;
     }
@@ -266,6 +271,27 @@ public class LinkedList<T> extends AbstractSequentialList<T> implements Collecti
         }
         out = out.substring(0, out.length() - 2) + "]";
         return out;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o == null || !(o instanceof LinkedList) || size != ((LinkedList)o).size()) return false;
+        for(int i = 0; i < size; i++){
+            if(!get(i).equals(((LinkedList)o).get(i))) return false;
+        }
+        return true;
+    }
+
+    public boolean equalsIgnoreOrder(Object o){
+        if(o == null || !(o instanceof LinkedList) || size != ((LinkedList)o).size()) return false;
+        boolean found = false;
+        for(T t1: this){
+            for(Object obj: ((LinkedList)o)){
+                if(t1.equals(obj)) found = true;
+            }
+            if(!found) return false;
+        }
+        return true;
     }
 
     private class Node<T>{
